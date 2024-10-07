@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String?
+  email     String   @unique
+  address   String
+  carPlateNumber String
+  password  String
+
+  parkings Parking[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model City {
+  id        Int      @id @default(autoincrement())
+  name      String
+  defaultPrice Int
+
+  parkingAreas ParkingArea[]
+  parkingPeriods ParkingPeriod[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+}
+
+model Parking {
+  id        Int      @id @default(autoincrement())
+  
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+
+  parkingAreaId Int
+  parkingArea ParkingArea @relation(fields: [parkingAreaId], references: [id])
+
+  startTime DateTime
+  endTime DateTime?
+
+  finalPrice Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model ParkingArea {
+  id        Int      @id @default(autoincrement())
+  name      String
+  
+  cityId Int
+  city City @relation(fields: [cityId], references: [id])
+
+  parkings Parking[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model ParkingPeriod {
+  id        Int      @id @default(autoincrement())
+  name      String
+  price     Int
+  
+  startTime Int
+  endTime   Int
+
+  cityId Int
+  city City @relation(fields: [cityId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
